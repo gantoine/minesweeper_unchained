@@ -30,12 +30,13 @@ class Board(models.Model):
 
       for i in range(self.width):
         for j in range(self.height):
-          Cell.objects.create(
+          cell = Cell.objects.create(
             board=self,
             x_loc=i,
             y_loc=j,
             bomb=proto_board[i, j],
           )
+          cell.set_mine_count(proto_board)
 
 class Cell(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
@@ -51,3 +52,23 @@ class Cell(models.Model):
       flagged = 'F' if self.flagged else ''
       discovered = 'D' if self.discovered else ''
       return "%s,%s %s %s %s" % (self.x_loc, self.y_loc, bomb, flagged, discovered)
+
+    def set_mine_count(self, proto_board):
+      if self.x_loc - 1 > 0:
+        if proto_board[self.x_loc - 1, self.y_loc]:
+          self.mine_count += 1
+
+      if self.y_loc - 1 > 0:
+        if proto_board[self.x_loc, self.y_loc - 1]:
+          self.mine_count += 1
+
+      if self.x_loc + 1 < self.board.width:
+        if proto_board[self.x_loc + 1, self.y_loc]:
+          self.mine_count += 1
+
+      if self.y_loc + 1 < self.board.height:
+        if proto_board[self.x_loc, self.y_loc + 1]:
+          self.mine_count += 1
+
+      self.save()
+
