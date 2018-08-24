@@ -6,6 +6,7 @@
 
 from django.db import models
 from django.utils import timezone
+from numpy import random, mat
 
 # Create your models here.
 class Board(models.Model):
@@ -18,6 +19,23 @@ class Board(models.Model):
 
     def  __str__(self):
       return "%sx%s %sB %s" % (self.height, self.width, self.bomb_count, self.state)
+
+    def populate(self):
+      if self.cell_set.all().exists():
+        return
+
+      bombs = [True] * self.bomb_count + [False] * (self.width * self.height - self.bomb_count)
+      random.shuffle(bombs)
+      proto_board = mat(bombs).reshape(self.width, self.height)
+
+      for i in range(self.width):
+        for j in range(self.height):
+          Cell.objects.create(
+            board=self,
+            x_loc=i,
+            y_loc=j,
+            bomb=proto_board[i, j],
+          )
 
 class Cell(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
