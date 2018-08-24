@@ -25,7 +25,7 @@ class Board(models.Model):
       return "%sx%s %sB %s" % (self.height, self.width, self.bomb_count, self.state)
 
     def reset(self):
-      self.state = 'ready'
+      self.state = 'playing'
       self.save()
 
       self.cell_set.all().delete()

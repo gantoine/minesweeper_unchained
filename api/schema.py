@@ -161,8 +161,27 @@ class FlagCell(graphene.Mutation):
         )
 
 
+class ResetBoard(graphene.Mutation):
+    board = graphene.Field(lambda: BoardType)
+
+    class Arguments:
+        id = graphene.Int()
+
+    def mutate(self, info, id):
+        board = Board.objects.get(pk=id)
+        if not board:
+            raise Exception('Invalid Cell!')
+
+        board.reset()
+
+        return ResetBoard(
+            board=board
+        )
+
+
 class Mutation(graphene.ObjectType):
     create_board = CreateBoard.Field()
     create_cell = CreateCell.Field()
     click_cell = ClickCell.Field()
     flag_cell = FlagCell.Field()
+    reset_board = ResetBoard.Field()
