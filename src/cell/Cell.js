@@ -31,6 +31,7 @@ const FLAG_CELL = gql`
         flagged
         board {
           id
+          state
           flagCount
         }
       }
@@ -39,16 +40,20 @@ const FLAG_CELL = gql`
 `;
 
 export default props => {
-  let contents = '';
+  let contents,
+    klass = '';
 
   if (props.discovered) {
     if (props.bomb) {
-      contents = 'B';
+      contents = <i className="cell-contents fa fa-bomb" />;
+      klass = 'bomb';
     } else {
-      contents = props.mineCount;
+      contents = <div className="cell-contents">{props.mineCount}</div>;
+      klass = 'discovered';
     }
   } else if (props.flagged) {
-    contents = 'F';
+    contents = <i className="cell-contents fa fa-flag" />;
+    klass = 'flagged';
   }
 
   const variables = { id: props.id };
@@ -59,7 +64,7 @@ export default props => {
         <Mutation mutation={FLAG_CELL} key={props.id}>
           {flagCell => (
             <div
-              className="cell"
+              className={`cell ${klass}`}
               onClick={e => {
                 e.preventDefault();
                 if (props.discovered || props.flagged) return;

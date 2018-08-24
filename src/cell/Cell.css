@@ -1,7 +1,48 @@
 .cell {
   width: 2em;
   height: 2em;
-  background: #999;
-  margin: 0 0 1px 1px;
+  background: #666;
+  margin: 0 2px 2px 0;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+}
+
+.cell:hover {
+  background: #555;
+}
+
+.cell:active {
+  background: #444;
+}
+
+.cell.bomb {
+  background: #b71c1c;
+  color: #000;
+  cursor: default;
+}
+
+.cell.flagged {
+  background: #666;
+  color: #ffa000;
+}
+
+.cell.flagged:hover {
+  background: #555;
+  color: #ff8f00;
+}
+
+.cell.flagged:active {
+  background: #444;
+  color: #ff6f00;
+}
+
+.cell-contents {
+  margin: auto;
+}
+
+.cell.discovered {
+  background: #ccc;
+  cursor: default;
 }

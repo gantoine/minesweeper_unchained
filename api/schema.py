@@ -137,7 +137,8 @@ class ClickCell(graphene.Mutation):
         if not cell:
             raise Exception('Invalid Cell!')
 
-        cell.click()
+        if cell.board.state == 'active':
+            cell.click()
 
         return ClickCell(
             cell=cell
@@ -154,7 +155,8 @@ class FlagCell(graphene.Mutation):
         if not cell:
             raise Exception('Invalid Cell!')
 
-        cell.toggle_flag()
+        if cell.board.state == 'active':
+            cell.toggle_flag()
 
         return FlagCell(
             cell=cell
@@ -172,7 +174,8 @@ class ResetBoard(graphene.Mutation):
         if not board:
             raise Exception('Invalid Cell!')
 
-        board.reset()
+        if not board.state == 'active':
+            board.reset()
 
         return ResetBoard(
             board=board

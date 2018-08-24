@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import { Query, Mutation } from 'react-apollo';
 
 import Row from '../row/Row';
+import './Board.css';
 
 const GET_BOARD = gql`
   query GetBoard {
@@ -37,12 +38,26 @@ const RESET_BOARD = gql`
 `;
 
 const resetButton = (board, action) => {
-  if (board.state !== 'failed') return '';
+  if (board.state === 'active') return '';
   return (
-    <button onClick={() => action({ variables: { id: board.id } })}>
+    <button
+      className="board-header-reset"
+      onClick={() => action({ variables: { id: board.id } })}
+    >
       Reset
     </button>
   );
+};
+
+const stateFace = state => {
+  switch (state) {
+    case 'solved':
+      return <i className="fa fa-grin-wink" />;
+    case 'failed':
+      return <i className="fa fa-sad-cry" />;
+    default:
+      return <i className="fa fa-smile-beam" />;
+  }
 };
 
 export default () => (
@@ -61,13 +76,19 @@ export default () => (
         <Mutation
           mutation={RESET_BOARD}
           key={board.id}
-          refetchQueries={result => [{ query: GET_BOARD }]}
+          refetchQueries={_ => [{ query: GET_BOARD }]}
         >
           {resetBoard => (
-            <div>
-              <div>{board.bombCount - board.flagCount}</div>
-              <div>{board.state}</div>
-              {resetButton(board, resetBoard)}
+            <div className="board">
+              <div className={`board-header ${board.state}`}>
+                <div className="board-header-flags">
+                  {board.bombCount - board.flagCount}
+                </div>
+                {resetButton(board, resetBoard)}
+                <div className="board-header-state">
+                  {stateFace(board.state)}
+                </div>
+              </div>
               {Object.keys(rows).map(key => {
                 return <Row cells={rows[key]} key={key} />;
               })}

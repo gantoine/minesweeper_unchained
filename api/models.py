@@ -13,7 +13,7 @@ class Board(models.Model):
     height = models.IntegerField(default=10)
     width = models.IntegerField(default=10)
     bomb_count = models.IntegerField(default=10)
-    # ready, playing, solved, failed
+    # ready, active, solved, failed
     state = models.CharField(max_length=200, default='ready')
     last_move = models.DateTimeField('last move', default=timezone.now)
 
@@ -25,7 +25,7 @@ class Board(models.Model):
       return "%sx%s %sB %s" % (self.height, self.width, self.bomb_count, self.state)
 
     def reset(self):
-      self.state = 'playing'
+      self.state = 'active'
       self.save()
 
       self.cell_set.all().delete()
@@ -35,9 +35,21 @@ class Board(models.Model):
       self.state = 'failed'
       self.save()
 
+      self.cell_set.filter(discovered=False).update(discovered=True)
+
+    def solve(self):
+      self.state = 'solved'
+      self.save()
+
+      self.cell_set.filter(discovered=False).update(discovered=True)
+
     def cell_clicked(self, cell):
       if cell.bomb:
         self.fail()
+
+    def cell_flagged(self):
+      if self.cell_set.filter(flagged=True, bomb=True).count() == self.bomb_count:
+        self.solve()
 
     def can_flag(self):
       return self.bomb_count > self.flag_count
@@ -136,3 +148,5 @@ class Cell(models.Model):
       if (new_flag and self.board.can_flag()) or (not new_flag and self.board.can_unflag()):
         self.flagged = new_flag
         self.save()
+
+        self.board.cell_flagged()

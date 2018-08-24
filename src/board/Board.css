@@ -1,0 +1,37 @@
+.board {
+  margin: auto;
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: 2em;
+  margin-bottom: 0.5em;
+  padding: 0 1em;
+
+  background: #666;
+  color: white;
+  text-transform: uppercase;
+}
+
+.board-header > * {
+  min-width: 5em;
+}
+
+.board-header.solved {
+  background: #1b5e20;
+}
+
+.board-header.failed {
+  background: #b71c1c;
+}
+
+.board-header-state {
+  text-align: right;
+}
+
+.board-header-state .fa {
+  font-size: 1.2em;
+}
