@@ -127,8 +127,7 @@ class CreateCell(graphene.Mutation):
         )
 
 class ClickCell(graphene.Mutation):
-    discovered = graphene.Boolean()
-    id = graphene.Int()
+    cell = graphene.Field(lambda: CellType)
 
     class Arguments:
         id = graphene.Int()
@@ -141,13 +140,11 @@ class ClickCell(graphene.Mutation):
         cell.click()
 
         return ClickCell(
-            id=cell.id,
-            discovered=cell.discovered,
+            cell=cell
         )
 
 class FlagCell(graphene.Mutation):
-    flagged = graphene.Boolean()
-    id = graphene.Int()
+    cell = graphene.Field(lambda: CellType)
 
     class Arguments:
         id = graphene.Int()
@@ -160,8 +157,7 @@ class FlagCell(graphene.Mutation):
         cell.toggle_flag()
 
         return FlagCell(
-            id=cell.id,
-            flagged=cell.flagged,
+            cell=cell
         )
 
 

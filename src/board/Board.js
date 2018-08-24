@@ -7,6 +7,7 @@ import Row from '../row/Row';
 const GET_BOARD = gql`
   {
     board(id: 1) {
+      id
       width
       height
       state

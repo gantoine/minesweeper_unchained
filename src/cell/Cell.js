@@ -7,8 +7,10 @@ import './Cell.css';
 const CLICK_CELL = gql`
   mutation ClickCellMutation($id: Int!) {
     clickCell(id: $id) {
-      id
-      discovered
+      cell {
+        id
+        discovered
+      }
     }
   }
 `;
@@ -16,8 +18,10 @@ const CLICK_CELL = gql`
 const FLAG_CELL = gql`
   mutation FlagCellMutation($id: Int!) {
     flagCell(id: $id) {
-      id
-      flagged
+      cell {
+        id
+        flagged
+      }
     }
   }
 `;
@@ -38,15 +42,15 @@ export default props => {
   const variables = { id: props.id };
 
   return (
-    <Mutation mutation={CLICK_CELL}>
+    <Mutation mutation={CLICK_CELL} key={props.id}>
       {clickCell => (
-        <Mutation mutation={FLAG_CELL}>
+        <Mutation mutation={FLAG_CELL} key={props.id}>
           {flagCell => (
             <div
               className="cell"
               onClick={e => {
                 e.preventDefault();
-                if (props.discovered) return;
+                if (props.discovered || props.flagged) return;
                 clickCell({ variables: variables });
               }}
               onContextMenu={e => {
