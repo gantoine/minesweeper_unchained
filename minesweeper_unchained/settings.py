@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'sweeper',
+    'api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +58,9 @@ ROOT_URLCONF = 'minesweeper_unchained.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'build')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,7 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'minesweeper_unchained.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -127,6 +128,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+  os.path.join(BASE_DIR, 'build/static'),
+]
+
 GRAPHENE = {
-    'SCHEMA': 'sweeper.schema.schema'
+    'SCHEMA': 'api.schema.schema'
 }

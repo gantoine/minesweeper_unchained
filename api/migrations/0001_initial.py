@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('flagged', models.BooleanField(default=False)),
                 ('discovered', models.BooleanField(default=False)),
                 ('mine_count', models.IntegerField(default=0)),
-                ('board', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sweeper.Board')),
+                ('board', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Board')),
             ],
         ),
     ]

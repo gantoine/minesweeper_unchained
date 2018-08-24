@@ -1,19 +1,19 @@
 import graphene
 
-import sweeper.schema
-import sweeper.schema_relay
+import api.schema
+import api.schema_relay
 
 
 class Query(
-  sweeper.schema.Query,
-  sweeper.schema_relay.RelayQuery,
+  api.schema.Query,
+  api.schema_relay.RelayQuery,
   graphene.ObjectType
 ):
     pass
 
 class Mutation(
-  sweeper.schema.Mutation,
-  sweeper.schema_relay.RelayMutation,
+  api.schema.Mutation,
+  api.schema_relay.RelayMutation,
   graphene.ObjectType
 ):
     pass
