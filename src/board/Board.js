@@ -41,6 +41,7 @@ export default () => (
       return (
         <div>
           <div>{board.bombCount - board.flagCount}</div>
+          <div>{board.state}</div>
           {Object.keys(rows).map(key => {
             return <Row cells={rows[key]} key={key} />;
           })}

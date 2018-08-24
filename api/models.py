@@ -28,6 +28,9 @@ class Board(models.Model):
       self.state = 'ready'
       self.save()
 
+      self.cell_set.all().delete()
+      self.populate()
+
     def fail(self):
       self.state = 'failed'
       self.save()
@@ -76,29 +79,54 @@ class Cell(models.Model):
       return "%s,%s %s %s %s" % (self.x_loc, self.y_loc, bomb, flagged, discovered)
 
     def set_mine_count(self, proto_board):
-      if self.x_loc - 1 > 0:
-        if proto_board[self.x_loc - 1, self.y_loc]:
-          self.mine_count += 1
+      board_width = self.board.width
+      board_height = self.board.height
 
-      if self.y_loc - 1 > 0:
-        if proto_board[self.x_loc, self.y_loc - 1]:
-          self.mine_count += 1
+      for i in [0, 1, -1]:
+        for j in [0, 1, -1]:
+          if (self.x_loc + i == board_width) or (self.x_loc - i < 0) or (self.y_loc + j == board_height) or (self.y_loc - j < 0):
+            continue
 
-      if self.x_loc + 1 < self.board.width:
-        if proto_board[self.x_loc + 1, self.y_loc]:
-          self.mine_count += 1
+          if i == 0 and j == 0:
+            continue
 
-      if self.y_loc + 1 < self.board.height:
-        if proto_board[self.x_loc, self.y_loc + 1]:
-          self.mine_count += 1
+          bomb = proto_board[self.x_loc + i, self.y_loc + j]
+          if bomb and not (i == 0 and j == 0):
+            self.mine_count += 1
 
       self.save()
 
     def click(self):
-      self.discovered =True
+      self.discover()
+      self.board.cell_clicked(self)
+
+      if self.board.state == 'failed':
+        return;
+
+      if self.mine_count == 0:
+        self.clear_neighbors()
+
+    def discover(self):
+      self.discovered = True
       self.save()
 
-      self.board.cell_clicked(self)
+    def clear_self(self):
+      if self.discovered or self.flagged or self.bomb:
+        return;
+
+      self.discover()
+
+      if self.mine_count == 0:
+        self.clear_neighbors()
+
+    def clear_neighbors(self):
+      cells = self.board.cell_set
+
+      for i in [0, 1, -1]:
+        for j in [0, 1, -1]:
+          cell = cells.filter(x_loc=self.x_loc + i, y_loc=self.y_loc + j).first()
+          if cell:
+            cell.clear_self()
 
     def toggle_flag(self):
       if self.discovered:

@@ -10,6 +10,14 @@ const CLICK_CELL = gql`
       cell {
         id
         discovered
+        board {
+          id
+          state
+          cellSet {
+            id
+            discovered
+          }
+        }
       }
     }
   }
@@ -21,6 +29,10 @@ const FLAG_CELL = gql`
       cell {
         id
         flagged
+        board {
+          id
+          flagCount
+        }
       }
     }
   }
