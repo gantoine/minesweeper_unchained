@@ -7,6 +7,8 @@ from .models import Board, Cell
 
 # Queries
 class BoardType(DjangoObjectType):
+    flag_count = graphene.Int()
+
     class Meta:
         model = Board
 
@@ -67,6 +69,7 @@ class CreateBoard(graphene.Mutation):
     height = graphene.Int()
     width = graphene.Int()
     bomb_count = graphene.Int()
+    flag_count = graphene.Int()
     state = graphene.String()
 
     class Arguments:
@@ -83,6 +86,7 @@ class CreateBoard(graphene.Mutation):
             height=board.height,
             width=board.width,
             bomb_count=board.bomb_count,
+            flag_count=board.flag_count,
             state=board.state,
         )
 
@@ -124,6 +128,7 @@ class CreateCell(graphene.Mutation):
 
 class ClickCell(graphene.Mutation):
     discovered = graphene.Boolean()
+    id = graphene.Int()
 
     class Arguments:
         id = graphene.Int()
@@ -136,11 +141,13 @@ class ClickCell(graphene.Mutation):
         cell.click()
 
         return ClickCell(
+            id=cell.id,
             discovered=cell.discovered,
         )
 
 class FlagCell(graphene.Mutation):
     flagged = graphene.Boolean()
+    id = graphene.Int()
 
     class Arguments:
         id = graphene.Int()
@@ -150,9 +157,10 @@ class FlagCell(graphene.Mutation):
         if not cell:
             raise Exception('Invalid Cell!')
 
-        cell.flag()
+        cell.toggle_flag()
 
         return FlagCell(
+            id=cell.id,
             flagged=cell.flagged,
         )
 

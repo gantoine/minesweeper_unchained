@@ -11,6 +11,7 @@ const GET_BOARD = gql`
       height
       state
       bombCount
+      flagCount
       cellSet {
         id
         xLoc
@@ -30,14 +31,15 @@ export default () => (
       if (loading) return 'Loading...';
       if (error) return `Error! ${error.message}`;
 
-      const rows = data.board.cellSet.reduce((memo, cell) => {
+      const board = data.board;
+      const rows = board.cellSet.reduce((memo, cell) => {
         (memo[cell.xLoc] = memo[cell.xLoc] || []).push(cell);
         return memo;
       }, {});
 
       return (
         <div>
-          <div>{data.board.bombCount}</div>
+          <div>{board.bombCount - board.flagCount}</div>
           {Object.keys(rows).map(key => {
             return <Row cells={rows[key]} key={key} />;
           })}

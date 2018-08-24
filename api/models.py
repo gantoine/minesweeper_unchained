@@ -17,6 +17,10 @@ class Board(models.Model):
     state = models.CharField(max_length=200, default='ready')
     last_move = models.DateTimeField('last move', default=timezone.now)
 
+    @property
+    def flag_count(self):
+      return self.cell_set.filter(flagged=True).count()
+
     def  __str__(self):
       return "%sx%s %sB %s" % (self.height, self.width, self.bomb_count, self.state)
 
@@ -32,10 +36,11 @@ class Board(models.Model):
       if cell.bomb:
         self.fail()
 
-    def cell_flagged(self, cell):
-      change = -1 if cell.flagged else 1
-      self.bomb_count = self.bomb_count + change
-      self.save()
+    def can_flag(self):
+      return self.bomb_count > self.flag_count
+
+    def can_unflag(self):
+      return self.flag_count > 0
 
     def populate(self):
       if self.cell_set.all().exists():
@@ -95,9 +100,11 @@ class Cell(models.Model):
 
       self.board.cell_clicked(self)
 
-    def flag(self):
-      if not self.discovered:
-        self.flagged = not self.flagged
-        self.save()
+    def toggle_flag(self):
+      if self.discovered:
+        return
 
-        self.board.cell_flagged(self)
+      new_flag = not self.flagged
+      if (new_flag and self.board.can_flag()) or (not new_flag and self.board.can_unflag()):
+        self.flagged = new_flag
+        self.save()
