@@ -89,9 +89,11 @@ export default () => (
                   {stateFace(board.state)}
                 </div>
               </div>
-              {Object.keys(rows).map(key => {
-                return <Row cells={rows[key]} key={key} />;
-              })}
+              <div className="table">
+                {Object.keys(rows).map(key => {
+                  return <Row cells={rows[key]} key={key} />;
+                })}
+              </div>
             </div>
           )}
         </Mutation>

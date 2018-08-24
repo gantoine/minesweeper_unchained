@@ -35,3 +35,8 @@
 .board-header-state .fa {
   font-size: 1.2em;
 }
+
+.table {
+  display: flex;
+  flex-direction: row;
+}

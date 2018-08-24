@@ -23,6 +23,17 @@
   cursor: default;
 }
 
+.cell.flagged-bomb {
+  background: #ccc;
+  color: #000;
+  cursor: default;
+}
+
+.cell.miss {
+  background: #ccc;
+  color: #b71c1c;
+}
+
 .cell.flagged {
   background: #666;
   color: #ffa000;

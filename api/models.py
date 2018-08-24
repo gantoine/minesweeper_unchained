@@ -35,7 +35,8 @@ class Board(models.Model):
       self.state = 'failed'
       self.save()
 
-      self.cell_set.filter(discovered=False).update(discovered=True)
+      self.cell_set.filter(discovered=False, bomb=True).update(discovered=True)
+      self.cell_set.filter(discovered=False, flagged=True).update(discovered=True)
 
     def solve(self):
       self.state = 'solved'
@@ -96,7 +97,7 @@ class Cell(models.Model):
 
       for i in [0, 1, -1]:
         for j in [0, 1, -1]:
-          if (self.x_loc + i == board_width) or (self.x_loc - i < 0) or (self.y_loc + j == board_height) or (self.y_loc - j < 0):
+          if (self.x_loc + i == board_width) or (self.x_loc + i < 0) or (self.y_loc + j == board_height) or (self.y_loc + j < 0):
             continue
 
           if i == 0 and j == 0:

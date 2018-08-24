@@ -33,6 +33,10 @@ const FLAG_CELL = gql`
           id
           state
           flagCount
+          cellSet {
+            id
+            discovered
+          }
         }
       }
     }
@@ -46,7 +50,10 @@ export default props => {
   if (props.discovered) {
     if (props.bomb) {
       contents = <i className="cell-contents fa fa-bomb" />;
-      klass = 'bomb';
+      klass = props.flagged ? 'flagged-bomb' : 'bomb';
+    } else if (props.flagged) {
+      contents = <i className="cell-contents fa fa-times fa-2x" />;
+      klass = 'miss';
     } else {
       contents = <div className="cell-contents">{props.mineCount}</div>;
       klass = 'discovered';
