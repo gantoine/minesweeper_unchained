@@ -10,12 +10,18 @@ import App from './app/App';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
+let csrfToken = '';
+document.cookie.split(';').forEach(function(cookie) {
+  var splits = cookie.trim().split('=');
+  if (splits[0] === 'csrftoken') csrfToken = splits[1];
+});
+
 const client = new ApolloClient({
   link: new HttpLink({
     // FIXME
     uri: 'http://localhost:8000/api/',
     headers: {
-      'X-CSRFToken': window.csrf_token,
+      'X-CSRFToken': csrfToken,
     },
   }),
   cache: new InMemoryCache(),

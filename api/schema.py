@@ -122,7 +122,43 @@ class CreateCell(graphene.Mutation):
             discovered=cell.discovered,
         )
 
+class ClickCell(graphene.Mutation):
+    discovered = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.Int()
+
+    def mutate(self, info, id):
+        cell = Cell.objects.get(pk=id)
+        if not cell:
+            raise Exception('Invalid Cell!')
+
+        cell.click()
+
+        return ClickCell(
+            discovered=cell.discovered,
+        )
+
+class FlagCell(graphene.Mutation):
+    flagged = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.Int()
+
+    def mutate(self, info, id):
+        cell = Cell.objects.get(pk=id)
+        if not cell:
+            raise Exception('Invalid Cell!')
+
+        cell.flag()
+
+        return FlagCell(
+            flagged=cell.flagged,
+        )
+
 
 class Mutation(graphene.ObjectType):
     create_board = CreateBoard.Field()
     create_cell = CreateCell.Field()
+    click_cell = ClickCell.Field()
+    flag_cell = FlagCell.Field()

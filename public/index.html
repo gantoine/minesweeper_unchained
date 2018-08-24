@@ -19,12 +19,6 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <script>
-      document.cookie.split(';').forEach(function(cookie) {
-        var splits = cookie.trim().split('=');
-        if (splits[0] === 'csrftoken') window.csrf_token = splits[1];
-      })
-    </script>
     <title>Minesweeper</title>
   </head>
   <body>

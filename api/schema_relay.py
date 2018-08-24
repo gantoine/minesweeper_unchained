@@ -1,7 +1,10 @@
+# Experiments with Relay
+
 import graphene
 import django_filters
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphql_relay.node.node import from_global_id
 
 from .models import Board, Cell
 
@@ -60,7 +63,7 @@ class RelayCreateBoard(graphene.relay.ClientIDMutation):
 
 
 class RelayCreateCell(graphene.relay.ClientIDMutation):
-    cell = graphene.Field(CellNode  )
+    cell = graphene.Field(CellNode)
 
     class Input:
         board_id = graphene.Int()
@@ -79,7 +82,47 @@ class RelayCreateCell(graphene.relay.ClientIDMutation):
 
         return RelayCreateCell(cell=cell)
 
+class RelayClickCell(graphene.relay.ClientIDMutation):
+    discovered = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.String()
+
+    def mutate_and_get_payload(root, info, **input):
+        id = from_global_id(input.get('id'))
+        cell = Cell.objects.get(pk=id)
+
+        if not cell:
+            raise Exception('Invalid Cell!')
+
+        cell.click()
+
+        return RelayClickCell(
+            discovered=cell.discovered,
+        )
+
+class RelayFlagCell(graphene.relay.ClientIDMutation):
+    flagged = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.String()
+
+    def mutate_and_get_payload(root, info, **input):
+        id = from_global_id(input.get('id'))
+        cell = Cell.objects.get(pk=id)
+
+        if not cell:
+            raise Exception('Invalid Cell!')
+
+        cell.flag()
+
+        return RelayClickCell(
+            flagged=cell.flagged,
+        )
+
 
 class RelayMutation(graphene.AbstractType):
     relay_create_board = RelayCreateBoard.Field()
     relay_create_cell = RelayCreateCell.Field()
+    relay_click_cell = RelayClickCell.Field()
+    relay_flag_cell = RelayFlagCell.Field()

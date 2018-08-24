@@ -20,6 +20,23 @@ class Board(models.Model):
     def  __str__(self):
       return "%sx%s %sB %s" % (self.height, self.width, self.bomb_count, self.state)
 
+    def reset(self):
+      self.state = 'ready'
+      self.save()
+
+    def fail(self):
+      self.state = 'failed'
+      self.save()
+
+    def cell_clicked(self, cell):
+      if cell.bomb:
+        self.fail()
+
+    def cell_flagged(self, cell):
+      change = -1 if cell.flagged else 1
+      self.bomb_count = self.bomb_count + change
+      self.save()
+
     def populate(self):
       if self.cell_set.all().exists():
         return
@@ -72,3 +89,15 @@ class Cell(models.Model):
 
       self.save()
 
+    def click(self):
+      self.discovered =True
+      self.save()
+
+      self.board.cell_clicked(self)
+
+    def flag(self):
+      if not self.discovered:
+        self.flagged = not self.flagged
+        self.save()
+
+        self.board.cell_flagged(self)
