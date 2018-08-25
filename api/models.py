@@ -10,7 +10,7 @@ import psycopg2
 
 from django.db import models
 from django.utils import timezone
-from numpy import random, mat
+from numpy import random, mat, array
 
 # Create your models here.
 class Board(models.Model):
@@ -104,27 +104,37 @@ class Cell(models.Model):
         return;
 
       if self.mine_count == 0:
-        self.clear_neighbors(self.board.cell_set)
+        cell_ids = []
+        self.clear_neighbors(self.board.cell_set, cell_ids)
+        Cell.objects.filter(pk__in=cell_ids).update(discovered=True)
 
     def discover(self):
       self.discovered = True
       self.save()
 
-    def clear_self(self, cells):
-      if self.discovered or self.flagged or self.bomb:
-        return;
-
-      self.discover()
-
-      if self.mine_count == 0:
-        self.clear_neighbors(cells)
-
-    def clear_neighbors(self, cells):
+    def clear_neighbors(self, cells, cell_ids):
       for i in [0, 1, -1]:
         for j in [0, 1, -1]:
           try:
-            cell = cells.get(x_loc=self.x_loc + i, y_loc=self.y_loc + j)
-            cell.clear_self(cells)
+            if i == 0 and j == 0:
+              continue
+
+            cell = cells.get(
+              x_loc=self.x_loc + i,
+              y_loc=self.y_loc + j,
+              discovered=False,
+              flagged=False,
+              bomb=False,
+            )
+
+            if cell.id in cell_ids:
+              continue
+
+            cell_ids.append(cell.id)
+
+            if cell.mine_count == 0:
+              cell.clear_neighbors(cells, cell_ids)
+
           except Cell.DoesNotExist:
             pass
 
