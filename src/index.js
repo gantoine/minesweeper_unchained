@@ -7,7 +7,6 @@ import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import App from './app/App';
-import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
 let csrfToken = '';
@@ -31,4 +30,3 @@ render(
   </ApolloProvider>,
   document.getElementById('root')
 );
-registerServiceWorker();
