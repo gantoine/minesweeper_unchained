@@ -1,9 +1,10 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import ApolloClient from 'apollo-boost';
+import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import App from './app/App';
 import registerServiceWorker from './registerServiceWorker';
@@ -16,13 +17,13 @@ document.cookie.split(';').forEach(function(cookie) {
 });
 
 const client = new ApolloClient({
-  // FIXME
-  uri: 'http://localhost:8000/api/',
   link: new HttpLink({
+    url: 'api/',
     headers: {
       'X-CSRFToken': csrfToken,
     },
   }),
+  cache: new InMemoryCache(),
 });
 
 render(

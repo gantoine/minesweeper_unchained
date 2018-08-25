@@ -1,47 +1,8 @@
-import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
+import { CLICK_CELL, FLAG_CELL } from '../mutations';
 import React from 'react';
 import './Cell.css';
-
-const CLICK_CELL = gql`
-  mutation ClickCellMutation($id: Int!) {
-    clickCell(id: $id) {
-      cell {
-        id
-        discovered
-        board {
-          id
-          state
-          cellSet {
-            id
-            discovered
-          }
-        }
-      }
-    }
-  }
-`;
-
-const FLAG_CELL = gql`
-  mutation FlagCellMutation($id: Int!) {
-    flagCell(id: $id) {
-      cell {
-        id
-        flagged
-        board {
-          id
-          state
-          flagCount
-          cellSet {
-            id
-            discovered
-          }
-        }
-      }
-    }
-  }
-`;
 
 export default props => {
   let contents,

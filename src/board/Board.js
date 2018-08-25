@@ -1,41 +1,10 @@
 import React from 'react';
-import gql from 'graphql-tag';
 import { Query, Mutation } from 'react-apollo';
 
+import { GET_BOARD } from '../queries';
+import { RESET_BOARD } from '../mutations';
 import Row from '../row/Row';
 import './Board.css';
-
-const GET_BOARD = gql`
-  query GetBoard {
-    board(id: 1) {
-      id
-      width
-      height
-      state
-      bombCount
-      flagCount
-      cellSet {
-        id
-        xLoc
-        yLoc
-        bomb
-        flagged
-        discovered
-        mineCount
-      }
-    }
-  }
-`;
-
-const RESET_BOARD = gql`
-  mutation ResetBoardMutation($id: Int!) {
-    resetBoard(id: $id) {
-      board {
-        id
-      }
-    }
-  }
-`;
 
 const resetButton = (board, action) => {
   if (board.state === 'active') return '';
