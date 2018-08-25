@@ -4,6 +4,10 @@
 # Run python manage.py makemigrations to create migrations for those changes
 # Run python manage.py migrate to apply those changes to the database.
 
+import os
+import dj_database_url
+import psycopg2
+
 from django.db import models
 from django.utils import timezone
 from numpy import random, mat
@@ -13,8 +17,8 @@ class Board(models.Model):
     height = models.IntegerField(default=10)
     width = models.IntegerField(default=10)
     bomb_count = models.IntegerField(default=10)
-    # ready, active, solved, failed
-    state = models.CharField(max_length=200, default='ready')
+    # active, solved, failed
+    state = models.CharField(max_length=200, default='active')
     last_move = models.DateTimeField('last move', default=timezone.now)
 
     @property
@@ -64,15 +68,18 @@ class Board(models.Model):
       random.shuffle(bombs)
       proto_board = mat(bombs).reshape(self.width, self.height)
 
+      sql = """INSERT INTO api_cell(board_id, x_loc, y_loc, bomb, flagged, discovered, mine_count)
+             VALUES"""
+
       for i in range(self.width):
         for j in range(self.height):
-          cell = Cell.objects.create(
-            board=self,
-            x_loc=i,
-            y_loc=j,
-            bomb=proto_board[i, j],
-          )
-          cell.set_mine_count(proto_board, self.width, self.height)
+          mine_count = build_mine_count_for_cell(proto_board, i, j, self.width, self.height)
+          sql = sql + "(%s, %s, %s, %s, %s, %s, %s)," % (self.id, i, j, proto_board[i, j], False, False, mine_count)
+
+      conn = setup_connection()
+      conn.cursor().execute(sql[:-1])
+      conn.commit()
+      teardown_connection(conn)
 
 class Cell(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
@@ -88,21 +95,6 @@ class Cell(models.Model):
       flagged = 'F' if self.flagged else ''
       discovered = 'D' if self.discovered else ''
       return "%s,%s %s %s %s" % (self.x_loc, self.y_loc, bomb, flagged, discovered)
-
-    def set_mine_count(self, proto_board, board_width, board_height):
-      for i in [0, 1, -1]:
-        for j in [0, 1, -1]:
-          if (self.x_loc + i == board_width) or (self.x_loc + i < 0) or (self.y_loc + j == board_height) or (self.y_loc + j < 0):
-            continue
-
-          if i == 0 and j == 0:
-            continue
-
-          bomb = proto_board[self.x_loc + i, self.y_loc + j]
-          if bomb and not (i == 0 and j == 0):
-            self.mine_count += 1
-
-      self.save()
 
     def click(self):
       self.discover()
@@ -146,3 +138,35 @@ class Cell(models.Model):
         self.save()
 
         self.board.cell_flagged()
+
+# Helper methods
+def setup_connection():
+  db_config = dj_database_url.config()
+  conn = psycopg2.connect(
+    database = db_config['NAME'],
+    user = db_config['USER'],
+    password = db_config['PASSWORD'],
+    host = db_config['HOST']
+  )
+  return conn
+
+def teardown_connection(conn):
+  conn.cursor().close()
+  conn.close()
+
+def build_mine_count_for_cell(proto_board, x, y, width, height):
+  mine_count = 0
+
+  for k in [0, 1, -1]:
+    for l in [0, 1, -1]:
+      if (x + k == width) or (x + k < 0) or (y + l == height) or (y + l < 0):
+        continue
+
+      if x == 0 and y == 0:
+        continue
+
+      bomb = proto_board[x + k, y + l]
+      if bomb:
+        mine_count += 1
+
+  return mine_count
