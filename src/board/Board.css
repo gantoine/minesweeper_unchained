@@ -1,7 +1,3 @@
-.board {
-  margin: auto;
-}
-
 .board-header {
   display: flex;
   justify-content: space-between;

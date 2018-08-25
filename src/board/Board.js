@@ -32,8 +32,15 @@ const stateFace = state => {
 export default () => (
   <Query query={GET_BOARD}>
     {({ loading, error, data }) => {
-      if (loading) return 'Loading...';
-      if (error) return `Error! ${error.message}`;
+      if (loading)
+        return <i className="app-loading fa fa-cog fa-spin fa-5x fa-fw" />;
+      if (error)
+        return (
+          <div className="app-error">
+            <i className="fa fa-exclamation-triangle fa-5x" />
+            <div className="app-error-message">${error.message}</div>
+          </div>
+        );
 
       const board = data.board;
       const rows = board.cellSet.reduce((memo, cell) => {

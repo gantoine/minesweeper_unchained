@@ -6,3 +6,24 @@
   background: #f1f1f1;
   color: #333;
 }
+
+.app > * {
+  margin: auto;
+}
+
+.app-error {
+  text-align: center;
+}
+
+.app-loading {
+  color: #1a237e;
+}
+
+.app-error .fa {
+  color: #b71c1c;
+}
+
+.app-error-message {
+  margin-top: 2em;
+  font-size: 1.2em;
+}
