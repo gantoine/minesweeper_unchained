@@ -18,7 +18,6 @@ document.cookie.split(';').forEach(function(cookie) {
 
 const client = new ApolloClient({
   link: new HttpLink({
-    url: 'api/',
     headers: {
       'X-CSRFToken': csrfToken,
     },
