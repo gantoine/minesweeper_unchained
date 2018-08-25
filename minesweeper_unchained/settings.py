@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['minesweeper-unchained.herokuapp.com', 'localhost']
 
@@ -42,7 +42,6 @@ X_FRAME_OPTIONS='DENY'
 # Application definition
 
 INSTALLED_APPS = [
-    'api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,6 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'livereload',
     'django.contrib.staticfiles',
+    'channels',
+    'channels_api',
+    'api',
     'graphene_django',
     'corsheaders',
 ]
@@ -60,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -145,9 +147,21 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 GRAPHENE = {
-    'SCHEMA': 'api.schema.schema'
+    'SCHEMA': 'api.schema.schema',
+    'MIDDLEWARE': [
+        'graphene_django_subscriptions.depromise_subscription'
+    ],
 }
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000'
 )
+
+CHANNELS_WS_PROTOCOLS = ["graphql-ws", ]
+
+CHANNEL_LAYERS = {
+  "default": {
+    "BACKEND": "asgiref.inmemory.ChannelLayer",
+    "ROUTING": "minesweeper_unchained.routing.project_routing",
+  },
+}

@@ -42,3 +42,5 @@ gunicorn == 19.9.0
 whitenoise == 4.0
 django-livereload-server == 0.3.2
 django-cors-headers == 2.4.0
+djangorestframework == 3.8.2
+graphene-django-subscriptions == 0.0.4

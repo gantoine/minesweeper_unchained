@@ -3,7 +3,7 @@ from graphene_django.types import DjangoObjectType
 from django.db.models import Q
 
 from .models import Board, Cell
-
+from .subscriptions import BoardSubscription, CellSubscription
 
 # Queries
 class BoardType(DjangoObjectType):
@@ -188,3 +188,8 @@ class Mutation(graphene.ObjectType):
     click_cell = ClickCell.Field()
     flag_cell = FlagCell.Field()
     reset_board = ResetBoard.Field()
+
+# Subscriptions
+class Subscription(graphene.ObjectType):
+    board_subscription = BoardSubscription.Field()
+    cell_subscription = CellSubscription.Field()
