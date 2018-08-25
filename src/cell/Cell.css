@@ -57,3 +57,12 @@
   background: #ccc;
   cursor: default;
 }
+
+.board.solved .cell {
+  pointer-events: none;
+}
+
+.board.solved .flagged {
+  background: #1b5e20;
+  color: #fff;
+}

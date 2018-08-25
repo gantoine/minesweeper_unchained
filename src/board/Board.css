@@ -1,3 +1,11 @@
+.board.solved .board-header {
+  background: #1b5e20;
+}
+
+.board.failed .board-header {
+  background: #b71c1c;
+}
+
 .board-header {
   display: flex;
   justify-content: space-between;
@@ -14,14 +22,6 @@
 
 .board-header > * {
   min-width: 5em;
-}
-
-.board-header.solved {
-  background: #1b5e20;
-}
-
-.board-header.failed {
-  background: #b71c1c;
 }
 
 .board-header-state {

@@ -55,8 +55,8 @@ export default () => (
           refetchQueries={_ => [{ query: GET_BOARD }]}
         >
           {resetBoard => (
-            <div className="board">
-              <div className={`board-header ${board.state}`}>
+            <div className={`board ${board.state}`}>
+              <div className="board-header">
                 <div className="board-header-flags">
                   {board.bombCount - board.flagCount}
                 </div>

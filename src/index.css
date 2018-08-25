@@ -4,8 +4,3 @@ body {
   font-family: sans-serif;
   font-family: 'Roboto', sans-serif;
 }
-
-#root {
-  height: 100%;
-  min-height: 100vh;
-}
