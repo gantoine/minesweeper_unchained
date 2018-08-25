@@ -1,6 +1,11 @@
 import { Mutation } from 'react-apollo';
 
-import { CLICK_CELL, FLAG_CELL } from '../mutations';
+import {
+  CLICK_CELL,
+  FLAG_CELL,
+  CLICK_CELL_RESPONSE,
+  FLAG_CELL_RESPONSE,
+} from '../mutations';
 import React from 'react';
 import './Cell.css';
 
@@ -26,6 +31,24 @@ export default props => {
 
   const variables = { id: props.id };
 
+  const onClick = (e, action) => {
+    e.preventDefault();
+    if (props.discovered || props.flagged) return;
+    action({
+      variables: variables,
+      optimisticResponse: CLICK_CELL_RESPONSE,
+    });
+  };
+
+  const onContextMenu = (e, action) => {
+    e.preventDefault();
+    if (props.discovered) return;
+    action({
+      variables: variables,
+      optimisticResponse: FLAG_CELL_RESPONSE,
+    });
+  };
+
   return (
     <Mutation mutation={CLICK_CELL} key={props.id}>
       {clickCell => (
@@ -33,16 +56,8 @@ export default props => {
           {flagCell => (
             <div
               className={`cell ${klass}`}
-              onClick={e => {
-                e.preventDefault();
-                if (props.discovered || props.flagged) return;
-                clickCell({ variables: variables });
-              }}
-              onContextMenu={e => {
-                e.preventDefault();
-                if (props.discovered) return;
-                flagCell({ variables: variables });
-              }}
+              onClick={e => onClick(e, clickCell)}
+              onContextMenu={e => onContextMenu(e, flagCell)}
             >
               {contents}
             </div>

@@ -42,8 +42,6 @@ class Board(models.Model):
       self.state = 'solved'
       self.save()
 
-      self.cell_set.filter(discovered=False).update(discovered=True)
-
     def cell_clicked(self, cell):
       if cell.bomb:
         self.fail()
@@ -74,7 +72,7 @@ class Board(models.Model):
             y_loc=j,
             bomb=proto_board[i, j],
           )
-          cell.set_mine_count(proto_board)
+          cell.set_mine_count(proto_board, self.width, self.height)
 
 class Cell(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
@@ -91,10 +89,7 @@ class Cell(models.Model):
       discovered = 'D' if self.discovered else ''
       return "%s,%s %s %s %s" % (self.x_loc, self.y_loc, bomb, flagged, discovered)
 
-    def set_mine_count(self, proto_board):
-      board_width = self.board.width
-      board_height = self.board.height
-
+    def set_mine_count(self, proto_board, board_width, board_height):
       for i in [0, 1, -1]:
         for j in [0, 1, -1]:
           if (self.x_loc + i == board_width) or (self.x_loc + i < 0) or (self.y_loc + j == board_height) or (self.y_loc + j < 0):
@@ -117,29 +112,29 @@ class Cell(models.Model):
         return;
 
       if self.mine_count == 0:
-        self.clear_neighbors()
+        self.clear_neighbors(self.board.cell_set)
 
     def discover(self):
       self.discovered = True
       self.save()
 
-    def clear_self(self):
+    def clear_self(self, cells):
       if self.discovered or self.flagged or self.bomb:
         return;
 
       self.discover()
 
       if self.mine_count == 0:
-        self.clear_neighbors()
+        self.clear_neighbors(cells)
 
-    def clear_neighbors(self):
-      cells = self.board.cell_set
-
+    def clear_neighbors(self, cells):
       for i in [0, 1, -1]:
         for j in [0, 1, -1]:
-          cell = cells.filter(x_loc=self.x_loc + i, y_loc=self.y_loc + j).first()
-          if cell:
-            cell.clear_self()
+          try:
+            cell = cells.get(x_loc=self.x_loc + i, y_loc=self.y_loc + j)
+            cell.clear_self(cells)
+          except Cell.DoesNotExist:
+            pass
 
     def toggle_flag(self):
       if self.discovered:

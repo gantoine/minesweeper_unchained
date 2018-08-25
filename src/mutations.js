@@ -29,6 +29,20 @@ export const CLICK_CELL = gql`
   }
 `;
 
+export const CLICK_CELL_RESPONSE = props => {
+  return {
+    __typename: 'Mutation',
+    clickCell: {
+      __typename: 'ClickCell',
+      cell: {
+        discovered: true,
+        id: props.id,
+        __typename: 'CellType',
+      },
+    },
+  };
+};
+
 export const FLAG_CELL = gql`
   mutation FlagCellMutation($id: Int!) {
     flagCell(id: $id) {
@@ -48,3 +62,17 @@ export const FLAG_CELL = gql`
     }
   }
 `;
+
+export const FLAG_CELL_RESPONSE = props => {
+  return {
+    __typename: 'Mutation',
+    flagCell: {
+      __typename: 'FlagCell',
+      cell: {
+        flagged: !props.flagged,
+        id: props.id,
+        __typename: 'CellType',
+      },
+    },
+  };
+};
